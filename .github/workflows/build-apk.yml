@@ -22,9 +22,7 @@ jobs:
 
       - name: Install required SDK components
         run: |
-          sdkmanager --install "platform-tools" \
-                               "platforms;android-34" \
-                               "build-tools;34.0.0"
+          sdkmanager --install "platform-tools" "platforms;android-34" "build-tools;34.0.0"
           yes | sdkmanager --licenses
 
       - name: Point local.properties to SDK
@@ -35,10 +33,23 @@ jobs:
       - name: Make Gradle wrapper executable
         run: chmod +x ./gradlew
 
+      # ➜ Mode verbeux pour voir l'erreur exacte
       - name: Build Debug APK
-        run: ./gradlew --no-daemon --stacktrace clean assembleDebug
+        run: ./gradlew --no-daemon --stacktrace --info --warning-mode=all clean assembleDebug
+
+      # ➜ On récupère TOUJOURS les rapports (même si ça échoue)
+      - name: Upload build reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gradle-reports
+          path: |
+            build/reports/**
+            app/build/reports/**
+            **/reports/problems/**
 
       - name: Upload APK artifact
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: MikaPEA-debug-apk
