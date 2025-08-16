@@ -1,3 +1,21 @@
+android {
+    // ... (garde le reste)
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    // Pour Compose/Kotlin
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+}
+
+// Option sûre pour que tout (Kotlin/Kapt) utilise Java 17
+kotlin {
+    jvmToolchain(17)
+}
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
