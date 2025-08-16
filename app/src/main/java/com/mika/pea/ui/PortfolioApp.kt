@@ -14,8 +14,6 @@ import androidx.compose.ui.unit.dp
 import com.mika.pea.PortfolioViewModel
 import com.mika.pea.data.db.entity.Holding
 
-
-
 @Composable
 fun PortfolioApp(vm: PortfolioViewModel) {
     var showAdd by remember { mutableStateOf(false) }
@@ -55,33 +53,46 @@ fun PortfolioApp(vm: PortfolioViewModel) {
         }
     }
 
-    if (showAdd) AddHoldingDialog(
-        onDismiss = { showAdd = false },
-        onConfirm = { s, sh, ap, cur ->
-            vm.add(s, sh, ap, cur)
-            showAdd = false
-        }
-    )
+    if (showAdd) {
+        AddHoldingDialog(
+            onDismiss = { showAdd = false },
+            onConfirm = { s, sh, ap, cur ->
+                vm.add(s, sh, ap, cur)
+                showAdd = false
+            }
+        )
+    }
 
-    if (showSettings) SettingsDialog(
-        apiKey = state.apiKey,
-        onDismiss = { showSettings = false },
-        onSave = { vm.setApiKey(it); showSettings = false }
-    )
+    if (showSettings) {
+        SettingsDialog(
+            apiKey = state.apiKey,
+            onDismiss = { showSettings = false },
+            onSave = { vm.setApiKey(it); showSettings = false }
+        )
+    }
 }
 
 @Composable
-fun HoldingRow(holding: Holding, lastPrice: Double?, onRefresh: () -> Unit, onDelete: () -> Unit) {
+fun HoldingRow(
+    holding: Holding,
+    lastPrice: Double?,
+    onRefresh: () -> Unit,
+    onDelete: () -> Unit
+) {
     Card(Modifier.padding(12.dp).fillMaxWidth()) {
         Column(Modifier.padding(12.dp)) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(holding.symbol, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Text(
+                    holding.symbol,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
                 Text(holding.currency)
             }
             Spacer(Modifier.height(8.dp))
             Text("Quantité: ${holding.shares}")
             Text("PRU: ${holding.avgPrice}")
-            Text("Cours actuel: ${lastPrice?.let { String.format("%.2f", it) } ?: "—"}")
+            Text("Cours actuel: ${lastPrice?.let { String.format(\"%.2f\", it) } ?: \"—\"}")
             Spacer(Modifier.height(8.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Button(onClick = onRefresh) { Text("Rafraîchir le cours") }
@@ -92,7 +103,10 @@ fun HoldingRow(holding: Holding, lastPrice: Double?, onRefresh: () -> Unit, onDe
 }
 
 @Composable
-fun AddHoldingDialog(onDismiss: () -> Unit, onConfirm: (String, Double, Double, String) -> Unit) {
+fun AddHoldingDialog(
+    onDismiss: () -> Unit,
+    onConfirm: (String, Double, Double, String) -> Unit
+) {
     var symbol by remember { mutableStateOf("") }
     var shares by remember { mutableStateOf("") }
     var avg by remember { mutableStateOf("") }
@@ -103,10 +117,26 @@ fun AddHoldingDialog(onDismiss: () -> Unit, onConfirm: (String, Double, Double, 
         title = { Text("Ajouter une ligne") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedTextField(value = symbol, onValueChange = { symbol = it }, label = { Text("Symbole (ex: AAPL)") })
-                OutlinedTextField(value = shares, onValueChange = { shares = it }, label = { Text("Quantité") })
-                OutlinedTextField(value = avg, onValueChange = { avg = it }, label = { Text("PRU") })
-                OutlinedTextField(value = currency, onValueChange = { currency = it }, label = { Text("Devise") })
+                OutlinedTextField(
+                    value = symbol,
+                    onValueChange = { symbol = it },
+                    label = { Text("Symbole (ex: AAPL)") }
+                )
+                OutlinedTextField(
+                    value = shares,
+                    onValueChange = { shares = it },
+                    label = { Text("Quantité") }
+                )
+                OutlinedTextField(
+                    value = avg,
+                    onValueChange = { avg = it },
+                    label = { Text("PRU") }
+                )
+                OutlinedTextField(
+                    value = currency,
+                    onValueChange = { currency = it },
+                    label = { Text("Devise") }
+                )
             }
         },
         confirmButton = {
@@ -121,7 +151,11 @@ fun AddHoldingDialog(onDismiss: () -> Unit, onConfirm: (String, Double, Double, 
 }
 
 @Composable
-fun SettingsDialog(apiKey: String, onDismiss: () -> Unit, onSave: (String) -> Unit) {
+fun SettingsDialog(
+    apiKey: String,
+    onDismiss: () -> Unit,
+    onSave: (String) -> Unit
+) {
     var key by remember { mutableStateOf(apiKey) }
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -130,9 +164,13 @@ fun SettingsDialog(apiKey: String, onDismiss: () -> Unit, onSave: (String) -> Un
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
                     "Pour récupérer automatiquement les cours, ajoutez une clé API Alpha Vantage (gratuite). " +
-                    "Sinon, l'application fonctionne sans mise à jour des prix."
+                        "Sinon, l'application fonctionne sans mise à jour des prix."
                 )
-                OutlinedTextField(value = key, onValueChange = { key = it }, label = { Text("Clé API Alpha Vantage") })
+                OutlinedTextField(
+                    value = key,
+                    onValueChange = { key = it },
+                    label = { Text("Clé API Alpha Vantage") }
+                )
             }
         },
         confirmButton = { Button(onClick = { onSave(key) }) { Text("Enregistrer") } },
